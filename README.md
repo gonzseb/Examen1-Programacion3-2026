@@ -1,12 +1,12 @@
-
 # Sistema de Gestión de Planilla
 
 Desktop app built for **Exam 1** of **Programación III** (2026-02).
 
 It's a small payroll manager: you register employees with a base salary,
 attach bonuses and deductions to them from a fixed catalog, and the system
-computes gross and net salary automatically. Everything is loaded from and
-saved back to `data.xml`, using JAXB.
+computes gross and net salary automatically. Everything is loaded from
+`data.xml` on startup and written back to it when the window closes, using
+JAXB.
 
 ## Architecture
 
@@ -71,6 +71,14 @@ src/main/java/system/
 
 `data.xml` ships with a seed catalog (3 bonuses, 3 deductions) and six seed
 employees so there's something to look at on first run.
+
+## Editing a employee
+
+Selecting a row in the employees table loads that `Empleado` into the edit
+form — including its assigned bonuses and deductions, staged separately from
+the catalog so they can be changed without touching the catalog itself.
+`cédula` is locked once an employee is selected (it's the XML id), so
+"Modificar" always updates in place rather than creating a new record.
 
 ## Running it
 
