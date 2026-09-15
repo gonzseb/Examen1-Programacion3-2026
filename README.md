@@ -1,83 +1,88 @@
+
 # Sistema de Gestión de Planilla
 
-Solución del Examen 1 — Programación III (2026-02), construida replicando 1:1 la
-arquitectura del proyecto guía `Examen1-Programacion3-master` (3 capas + MVC en
-la capa de presentación, persistencia XML con JAXB).
+Desktop app built for **Exam 1** of **Programación III** (2026-02).
 
-## Arquitectura
+It's a small payroll manager: you register employees with a base salary,
+attach bonuses and deductions to them from a fixed catalog, and the system
+computes gross and net salary automatically. Everything is loaded from and
+saved back to `data.xml`, using JAXB.
+
+## Architecture
+
+Three layers, MVC only in the presentation layer (as required by the exam spec):
+
+- `presentation/payroll/` — Swing UI, `PlanillaView` + `Controller` + `Model`,
+  plus the table models feeding the three tables in the view (employees,
+  assigned bonuses, assigned deductions).
+- `logic/` — `Service` (the only entry point the UI talks to) and the domain
+  entities (`Empleado`, `Rubro`, `TipoBono`, `TipoDeduccion`).
+- `data/` — `Data` (the root object that gets marshalled) and `XmlPersister`,
+  a singleton that loads/saves `data.xml`.
+
+`AbstractModel` and `AbstractTableModel` are generic base classes (Observer /
+`PropertyChangeSupport` and a generic Swing `TableModel`, respectively) —
+not payroll-specific, reused as-is wherever a model or table model is needed.
 
 ```
 src/main/java/system/
 ├── Application.java
 ├── data/
-│   ├── Data.java                 → raíz JAXB: empleados + catálogo de bonos/deducciones
-│   └── XmlPersister.java         → singleton load()/store() (idéntico al guía)
+│   ├── Data.java
+│   └── XmlPersister.java
 ├── logic/
-│   ├── Service.java               → único punto de entrada de la Vista a la lógica
+│   ├── Service.java
 │   └── entities/
-│       ├── Rubro.java             → clase abstracta (bono/deducción): nombre, tipoValor, valor
+│       ├── Empleado.java
+│       ├── Rubro.java
 │       ├── TipoBono.java
 │       ├── TipoDeduccion.java
-│       ├── Empleado.java          → cédula, nombre, teléfono, correo, salarioBase, bonos, deducciones
 │       └── utilities/
-│           └── TipoValor.java     → enum PORCENTUAL, FIJO
+│           └── TipoValor.java
 └── presentation/
-    ├── AbstractModel.java         → idéntico al guía (Observer/PropertyChangeSupport)
-    ├── AbstractTableModel.java    → idéntico al guía (TableModel genérico)
+    ├── AbstractModel.java
+    ├── AbstractTableModel.java
     └── payroll/
-        ├── Model.java             → estado observable de la Vista
-        ├── Controller.java        → único que llama a Service
+        ├── PlanillaView.java
+        ├── Controller.java
+        ├── Model.java
         ├── EmpleadosTableModel.java
         ├── BonosAsignadosTableModel.java
-        ├── DeduccionesAsignadasTableModel.java
-        └── PlanillaView.java      → Vista Swing (layout manual, lista para migrar a .form)
+        └── DeduccionesAsignadasTableModel.java
 ```
 
-## Fórmulas de negocio
+## How bonuses/deductions link to employees
 
-- `salarioBruto = salarioBase + Σ bono.calcularMonto(salarioBase)`
-- `salarioNeto  = salarioBruto − Σ deduccion.calcularMonto(salarioBruto)`
+- `Rubro` is an abstract class (`nombre`, `tipoValor`, `valor`) extended by
+  `TipoBono` and `TipoDeduccion`. Both live in a fixed catalog inside `Data`
+  (`catalogoBonos`, `catalogoDeducciones`) — the exam spec treats these as
+  read-only reference data, not something the user creates.
+- `Empleado` doesn't store its own copies of the bonuses/deductions it has:
+  it holds `List<TipoBono>` / `List<TipoDeduccion>` marked `@XmlIDREF`,
+  pointing at the `@XmlID`-tagged `nombre` field on `Rubro`. Same idea for
+  `Empleado.cedula`, which is also `@XmlID` and doubles as its natural key —
+  there's no separate generated id.
+- `Rubro.calcularMonto(salarioReferencia)` applies the rule generically:
+  `PORCENTUAL` returns `salarioReferencia * (valor / 100)`, `FIJO` returns
+  `valor` as-is. Gross and net salary are plain derived methods on
+  `Empleado`, never persisted:
+  - `salarioBruto = salarioBase + Σ bono.calcularMonto(salarioBase)`
+  - `salarioNeto  = salarioBruto − Σ deduccion.calcularMonto(salarioBruto)`
 
-Verificado con el ejemplo de PEDRO del enunciado (salario base ₡1.000.000, bono
-Dedicación Exclusiva 35% + Grado de Maestría ₡20.000, deducción Régimen de
-pensiones 4,33% + Seguro de vida del Magisterio ₡19.970):
+`data.xml` ships with a seed catalog (3 bonuses, 3 deductions) and six seed
+employees so there's something to look at on first run.
 
-- Salario Bruto = 1.370.000
-- Salario Neto  = 1.290.709
+## Running it
 
-Ambos números coinciden exactamente con la captura de pantalla del enunciado.
+Standard Maven project, entry point is `system.Application`. Run it from
+IntelliJ or with `mvn compile exec:java -Dexec.mainClass=system.Application`.
+`data.xml` must be present in the project's working directory.
 
-## Cómo correrlo
+## Screenshots
 
-```
-mvn compile exec:java -Dexec.mainClass=system.Application
-```
+![Empleado en modelo](screenshots/empleado-en-modelo.png)
+![Proyecto listo](screenshots/proyecto-listo.png)
 
-o ejecutar `Application.main` desde IntelliJ. `data.xml` debe estar en el
-directorio de trabajo (mismo nivel del proyecto).
+## Author
 
-## Migración a Swing UI Designer
-
-`PlanillaView.java` está escrita en Java puro para poder correrla y validarla
-tal cual, sin depender de IntelliJ. Para migrarla al plugin de GUI Designer:
-
-1. Crear `PlanillaView.form` con `bind-to-class="system.presentation.payroll.PlanillaView"`.
-2. Arrastrar los componentes usando **exactamente los mismos nombres de binding**
-   ya declarados como atributos de la clase: `cedulaField`, `nombreField`,
-   `telefonoField`, `correoField`, `salarioField`, `bonosComboBox`,
-   `agregarBonoButton`, `bonosAsignadosTable`, `deduccionesComboBox`,
-   `agregarDeduccionButton`, `deduccionesAsignadasTable`, `agregarButton`,
-   `modificarButton`, `limpiarButton`, `empleadosTable`, `planillaPanel`.
-3. Borrar el bloque de construcción manual entre los comentarios
-   `// --- LAYOUT ... --- // --- FIN LAYOUT ---` (eso lo genera el `.form`).
-   Todo lo demás (listeners, `propertyChange`, `loadCatalogos`) se mantiene igual.
-
-## Nota sobre la validación de este código
-
-Este proyecto fue compilado y ejecutado localmente contra la lógica de dominio
-(clases `Empleado`, `Rubro`, `TipoBono`, `TipoDeduccion`) para confirmar que los
-cálculos de salario bruto/neto arrojan los mismos valores que la captura del
-enunciado. No se pudo ejecutar una compilación Maven completa (con JAXB y
-FlatLaf reales) fuera de un entorno con acceso a Maven Central, así que se
-recomienda compilar una vez dentro de IntelliJ antes de la migración a `.form`
-para confirmar que no aparecen errores adicionales dependientes del entorno.
+Sebastián David González Masis — Programación III, Exam 1 (2026-02)
