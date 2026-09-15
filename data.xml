@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <empleados>
+        <empleado>
+            <cedula>111</cedula>
+            <nombre>PEDRO</nombre>
+            <telefono>111-111</telefono>
+            <correo>P@GMAIL.COM</correo>
+            <salarioBase>1000000.0</salarioBase>
+            <bonos>
+                <bono>Dedicación exclusiva</bono>
+                <bono>Grado de Maestría</bono>
+            </bonos>
+            <deducciones>
+                <deduccion>Régimen de pensiones</deduccion>
+                <deduccion>Seguro de vida del Magisterio</deduccion>
+            </deducciones>
+        </empleado>
+        <empleado>
+            <cedula>222</cedula>
+            <nombre>MARIA</nombre>
+            <telefono>222-222</telefono>
+            <correo>MARIA@GMAIL.COM</correo>
+            <salarioBase>1500000.0</salarioBase>
+            <bonos>
+                <bono>Grado de Doctorado</bono>
+            </bonos>
+            <deducciones>
+                <deduccion>Seguro de salud</deduccion>
+                <deduccion>Régimen de pensiones</deduccion>
+            </deducciones>
+        </empleado>
+        <empleado>
+            <cedula>333</cedula>
+            <nombre>JUAN</nombre>
+            <telefono>333-333</telefono>
+            <correo>JUAN@GMAIL.COM</correo>
+            <salarioBase>800000.0</salarioBase>
+            <bonos/>
+            <deducciones>
+                <deduccion>Régimen de pensiones</deduccion>
+            </deducciones>
+        </empleado>
+        <empleado>
+            <cedula>444</cedula>
+            <nombre>ANA</nombre>
+            <telefono>444-444</telefono>
+            <correo>ANA@GMAIL.COM</correo>
+            <salarioBase>600000.0</salarioBase>
+            <bonos/>
+            <deducciones/>
+        </empleado>
+        <empleado>
+            <cedula>555</cedula>
+            <nombre>LUIS</nombre>
+            <telefono>555-555</telefono>
+            <correo>LUIS@GMAIL.COM</correo>
+            <salarioBase>1200000.0</salarioBase>
+            <bonos>
+                <bono>Dedicación exclusiva</bono>
+                <bono>Grado de Doctorado</bono>
+            </bonos>
+            <deducciones>
+                <deduccion>Régimen de pensiones</deduccion>
+                <deduccion>Seguro de salud</deduccion>
+                <deduccion>Seguro de vida del Magisterio</deduccion>
+            </deducciones>
+        </empleado>
+        <empleado>
+            <cedula>119220546</cedula>
+            <nombre>Sebastián David González Masis</nombre>
+            <telefono>7037-4297</telefono>
+            <correo>sbsgonzalez21@gmail.com</correo>
+            <salarioBase>1000000.0</salarioBase>
+            <bonos>
+                <bono>Grado de Doctorado</bono>
+            </bonos>
+            <deducciones>
+                <deduccion>Seguro de salud</deduccion>
+            </deducciones>
+        </empleado>
+    </empleados>
+    <catalogoBonos>
+        <bono>
+            <nombre>Dedicación exclusiva</nombre>
+            <tipoValor>PORCENTUAL</tipoValor>
+            <valor>35.0</valor>
+        </bono>
+        <bono>
+            <nombre>Grado de Doctorado</nombre>
+            <tipoValor>FIJO</tipoValor>
+            <valor>30000.0</valor>
+        </bono>
+        <bono>
+            <nombre>Grado de Maestría</nombre>
+            <tipoValor>FIJO</tipoValor>
+            <valor>20000.0</valor>
+        </bono>
+    </catalogoBonos>
+    <catalogoDeducciones>
+        <deduccion>
+            <nombre>Régimen de pensiones</nombre>
+            <tipoValor>PORCENTUAL</tipoValor>
+            <valor>4.33</valor>
+        </deduccion>
+        <deduccion>
+            <nombre>Seguro de salud</nombre>
+            <tipoValor>PORCENTUAL</tipoValor>
+            <valor>5.5</valor>
+        </deduccion>
+        <deduccion>
+            <nombre>Seguro de vida del Magisterio</nombre>
+            <tipoValor>FIJO</tipoValor>
+            <valor>19970.0</valor>
+        </deduccion>
+    </catalogoDeducciones>
+</data>
